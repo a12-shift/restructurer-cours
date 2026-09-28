@@ -1,6 +1,6 @@
 ---
 name: restructurer-cours
-description: Réécrit et réorganise intégralement une partie de cours (la sélection, ou une grande partie désignée) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants.
+description: "Réécrit et réorganise intégralement une partie de cours (la sélection, ou une grande partie désignée) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants."
 ---
 
 ## When to use
