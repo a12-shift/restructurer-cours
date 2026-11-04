@@ -3,7 +3,7 @@ name: restructurer-cours
 description: "Réécrit et réorganise intégralement une partie de cours dans Word (la sélection, ou une grande partie désignée par son titre) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants. À utiliser quand on demande de restructurer, réorganiser, réécrire ou mettre en page une partie, une séance ou un chapitre de cours."
 license: MIT
 metadata:
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 ## When to use
@@ -29,9 +29,9 @@ La partie ciblée est réécrite et réorganisée dans le document :
 ### 1. Lire la cible et le jeu de styles
 - Appeler `read_surface_context` pour connaître la sélection et les styles du document.
 - Dans `execute_office_js`, lire `context.document.getSelection().paragraphs` : `text`, `style`, `isListItem`.
-- Relever les styles utilisés : le style de puces maison (ex. « Liste à puces »), les styles de titres (Titre 1/2/3), les styles d'encadré (ex. « Accentuation intense »), ainsi que la police, la taille et la couleur du corps de texte (ex. Aptos 10, #000000).
+- Relever, sur des paragraphes existants, le nom exact (propriété `style`) de chaque style à réutiliser : le style de puces maison (ex. « Liste à puces »), les styles de titres (Titre 1/2/3), les styles d'encadré (ex. « Accentuation intense »), ainsi que la police, la taille et la couleur du corps de texte (ex. Aptos 10, #000000).
 **Done when:** on connaît le premier et le dernier paragraphe de la cible, leur nombre et les styles à réutiliser.
-**Produces:** l'index du titre d'ancrage et la liste exacte des anciens paragraphes à remplacer.
+**Produces:** l'index du titre d'ancrage, la liste exacte des anciens paragraphes à remplacer et le nom exact du style à appliquer pour chaque rôle (corps, puce, sous-titre de chaque niveau, encadré).
 
 ### 2. Construire le nouveau plan
 - Regrouper les idées par thème et déplacer les phrases dispersées qui portent sur le même sujet.
@@ -45,10 +45,12 @@ La partie ciblée est réécrite et réorganisée dans le document :
 ### 3. Insérer le nouveau contenu, puis supprimer l'ancien
 - Dans un seul `execute_office_js`, insérer les paragraphes avec `insertParagraph("", "After")` à la suite du titre d'ancrage, en chaînant chaque paragraphe après le précédent.
 - Appliquer les styles :
-  - corps de texte : `styleBuiltIn = "Normal"` ;
-  - puces : le style de puces maison ;
-  - sous-titres : le style de titre du document au niveau adapté ;
+  - corps de texte : `styleBuiltIn = Word.BuiltInStyleName.normal` ;
+  - puces : `style` = le nom du style de puces maison relevé à l'étape 1. S'il n'y a encore aucune puce dans le document, le nom local du style intégré (« Liste à puces » dans Word en français) ;
+  - sous-titres : `style` = le nom relevé sur un titre existant du niveau adapté (ex. « Titre 2 »), ou à défaut `styleBuiltIn = Word.BuiltInStyleName.heading2` (de `heading1` à `heading9`) ;
   - encadrés : le style d'origine, repris avec `style` depuis le paragraphe original.
+- **Rule :** `styleBuiltIn` n'accepte que les valeurs de `Word.BuiltInStyleName`, des identifiants anglais (`Normal`, `Heading1` à `Heading9`, `ListParagraph`, `Quote`…). N'y mettre ni un nom localisé (« Titre 2 », « Liste à puces »), ni `ListBullet`, qui n'existe pas : le script échoue avec `InvalidArgument`. Tout autre style s'applique avec `style` et le nom exact relevé à l'étape 1.
+- **Rule :** si `execute_office_js` échoue pendant l'insertion, les paragraphes insérés avant l'erreur peuvent rester dans le document. Relire la zone, retirer ces paragraphes partiels, corriger la cause, puis relancer l'insertion complète. Ne rien supprimer de l'ancien contenu tant que l'insertion n'a pas entièrement réussi.
 - Pour le gras et l'italique, découper le texte en segments `**gras**` / `*italique*` et insérer chaque segment avec `insertText(t, "End")`. Fixer explicitement bold, italic, police, taille et couleur du corps sur chaque segment.
 - Supprimer les anciens paragraphes seulement après l'insertion et un `sync`.
 - **Rule :** repérer le titre d'ancrage par son style et une sous-chaîne (le texte peut contenir des espaces doubles). Vérifier que le nombre d'anciens paragraphes correspond à la sélection avant toute suppression.

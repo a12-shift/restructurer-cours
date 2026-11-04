@@ -64,6 +64,7 @@ Un skill importé de cette façon n'est enregistré **que sur cet ordinateur**, 
 - **Le skill n'apparaît pas dans Word** : vérifiez que son interrupteur est activé dans [Customize › Skills](https://claude.ai/customize/skills) et que l'option **Code execution and file creation** est active, puis fermez et rouvrez le volet Claude.
 - **Claude ne lance pas le skill de lui-même** : tapez `/` dans le volet et choisissez **restructurer-cours**, ou commencez votre demande par « Restructure ».
 - **Le skill a disparu après une mise à jour de Windows** : cela concerne les skills importés depuis le complément. Réimportez-le depuis claude.ai (étape 2). Voir la [note d'Anthropic](https://claude.com/docs/office-agents/data-storage#chat-history-and-skills-missing-after-a-microsoft-365-update-on-windows).
+- **Erreur `InvalidArgument` sur `styleBuiltIn` pendant la restructuration** : ce bug des versions 1.1.1 et antérieures est corrigé en 1.1.2. [Mettez le skill à jour](#mettre-à-jour-le-skill), puis demandez à Claude de relire la partie : des paragraphes ont pu être insérés en partie avant l'erreur.
 - **Claude indique que les outils Word ne sont pas disponibles** : la demande a été faite dans claude.ai et non dans Word. Ouvrez le document dans Word avec le complément, ou laissez Claude rendre le texte restructuré dans le chat.
 
 ## Ce que fait le skill
