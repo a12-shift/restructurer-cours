@@ -1,0 +1,86 @@
+# Valide le skill, construit restructurer-cours.zip et, sur main, publie une
+# release vX.Y.Z dès que metadata.version de SKILL.md change.
+name: Skill
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  # Validateur officiel de l'Agent Skills specification, épinglé sur un commit.
+  SKILLS_REF: git+https://github.com/agentskills/agentskills.git@69ef37e9424c0a7ea9dd2293b559e43ec8176379#subdirectory=skills-ref
+  SKILL_NAME: restructurer-cours
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.props.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Construire le zip
+        run: python tools/build_zip.py
+
+      - name: Valider le skill
+        run: |
+          pip install "$SKILLS_REF"
+          skills-ref validate "dist/$SKILL_NAME"
+
+      - name: Lire la version
+        id: props
+        run: |
+          version=$(skills-ref read-properties "dist/$SKILL_NAME" | jq -r '.metadata.version // empty')
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error file=SKILL.md::metadata.version doit être de la forme X.Y.Z (trouvé : '$version')"
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.SKILL_NAME }}
+          path: dist/${{ env.SKILL_NAME }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: ${{ env.SKILL_NAME }}
+
+      - name: Publier la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ needs.build.outputs.version }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "::warning file=SKILL.md::La release $TAG existe déjà : le zip téléchargeable n'a pas changé. Augmentez metadata.version dans SKILL.md pour publier une nouvelle version."
+            exit 0
+          fi
+          gh release create "$TAG" "$SKILL_NAME.zip" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$SKILL_NAME $TAG" \
+            --latest \
+            --generate-notes \
+            --notes "Téléchargez **$SKILL_NAME.zip** ci-dessous et importez-le, sans le décompresser, dans [claude.ai › Customize › Skills](https://claude.ai/customize/skills). Pour remplacer une version déjà installée, supprimez d'abord l'ancienne. Guide complet : [README](https://github.com/$GITHUB_REPOSITORY#readme)."

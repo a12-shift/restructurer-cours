@@ -1,13 +1,18 @@
 ---
 name: restructurer-cours
-description: "Réécrit et réorganise intégralement une partie de cours (la sélection, ou une grande partie désignée) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants."
+description: "Réécrit et réorganise intégralement une partie de cours dans Word (la sélection, ou une grande partie désignée par son titre) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants. À utiliser quand on demande de restructurer, réorganiser, réécrire ou mettre en page une partie, une séance ou un chapitre de cours."
+metadata:
+  version: "1.1.0"
 ---
 
 ## When to use
 Quand l'utilisateur demande de restructurer, réorganiser, réécrire ou mettre en page une partie de cours : « restructure la partie sélectionnée », « fais de même pour la séance suivante », « réorganise cette partie », « refais la partie sélectionnée », ou quand il désigne une grande partie par son titre (ex. « la séance sur Foucault »).
 
+## Environment
+Ce skill s'appuie sur les outils du complément Claude pour Word : `read_surface_context`, `execute_office_js`, `search_doc_text` et `verify_doc_visual`. S'ils ne sont pas disponibles (par exemple dans le chat de claude.ai), le dire à l'utilisateur et proposer de rendre la partie restructurée dans le chat, en Markdown, selon les mêmes règles.
+
 ## Inputs
-- `cible` : la sélection de l'utilisateur. Sans sélection, la grande partie qu'il nomme (un titre de style Titre / Titre 1 et tout son contenu jusqu'au titre suivant de même niveau).
+- `cible` : la sélection de l'utilisateur. Sans sélection, la grande partie qu'il nomme (un titre de style Titre / Titre 1 et tout son contenu jusqu'au titre suivant de même niveau). Sans sélection ni partie nommée, demander quelle partie restructurer avant toute modification.
 
 ## Goal
 La partie ciblée est réécrite et réorganisée dans le document :
