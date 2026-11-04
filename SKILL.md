@@ -1,8 +1,9 @@
 ---
 name: restructurer-cours
 description: "Réécrit et réorganise intégralement une partie de cours dans Word (la sélection, ou une grande partie désignée par son titre) : sous-titres, puces, gras et italique, langue corrigée, sans supprimer aucune idée ni modifier les titres existants. À utiliser quand on demande de restructurer, réorganiser, réécrire ou mettre en page une partie, une séance ou un chapitre de cours."
+license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 ## When to use

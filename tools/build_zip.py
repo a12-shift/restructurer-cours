@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 DIST = ROOT / "dist"
 # Contenu du skill copié dans l'archive ; les dossiers absents sont ignorés.
-SKILL_ENTRIES = ("SKILL.md", "references", "assets")
+SKILL_ENTRIES = ("SKILL.md", "LICENSE", "references", "assets")
 TEXT_SUFFIXES = {".md", ".txt"}
 FRONTMATTER_PATTERN = re.compile(r"\A---\r?\n(.*?)\r?\n---", re.DOTALL)
 NAME_PATTERN = re.compile(r"^name:\s*[\"']?([a-z0-9-]+)[\"']?\s*$", re.MULTILINE)

@@ -99,3 +99,7 @@ git clone https://github.com/a12-shift/restructurer-cours.git ~/.claude/skills/r
 2. Poussez sur `main`. Le workflow [`skill.yml`](.github/workflows/skill.yml) valide le skill avec [`skills-ref`](https://github.com/agentskills/agentskills/tree/main/skills-ref), construit `restructurer-cours.zip` et publie la release `v1.2.0`. Le lien de téléchargement pointe alors automatiquement vers cette version.
 
 Pour construire l'archive en local : `python tools/build_zip.py` produit `dist/restructurer-cours.zip`.
+
+## Licence
+
+[MIT](LICENSE) : vous pouvez utiliser, modifier et partager ce skill librement, à condition de conserver la mention de copyright et le texte de la licence.
